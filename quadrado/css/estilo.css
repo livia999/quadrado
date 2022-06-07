@@ -1,0 +1,6 @@
+
+.container{
+    width: <?php echo $lado;?>px;
+    height: <?php echo $lado;?>px;
+    background: <?php echo $cor;?>;
+}
