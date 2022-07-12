@@ -2,6 +2,18 @@
 <html lang="pt-br">
 <head>
 
+<style>
+
+h2{
+  font-family: 'Lobster', cursive;
+}
+
+</style>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lobster&display=swap" rel="stylesheet">
+
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,12 +24,15 @@
     background-size: 100px 100px, 100px 100px;
   background-position: 50px -50px, 50px -50px; ">
 
-<center>
-        <h2>
-        <a href="indexUsuario.php">Login</a> 
-        <a href="index.php">Quadrado</a>
-        <a href="indexTabuleiro.php">Tabuleiro</a></h2>
-</center>
+
+<center><h2 style="color: #746AB0;"> Você está no menu </h2></center>
+
+        <ul>
+        <li><a href="indexUsuario.php">Login</a></li> 
+        <li><a href="index.php">Quadrado</a></li>
+        <li><a href="indexCubo.php">Cubo</a></li>
+        <li><a href="indexTabuleiro.php">Tabuleiro</a></li>
+        </ul>
 
 </body>
 </html>

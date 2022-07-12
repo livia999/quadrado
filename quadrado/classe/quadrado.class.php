@@ -11,45 +11,27 @@
 // fetchAll -> retorna tudo
 
 require_once("conf/Conexao.php");
+require_once("forma.class.php");
 
-class Quadrado{
+class Quadrado extends Forma{ //quadrado vai herdar a forma
 
-    private $id;
     private $lado;
-    private $cor;
-    private $idTabuleiro;
 
 public function __construct($id, $lado, $cor, $idTabuleiro){
-
+    
     $this->setId($id);
     $this->setLado($lado);
     $this->setCor($cor);
     $this->setTabuleiro($idTabuleiro);
+    self::$contador = self::$contador + 1;   
 
 }
 
-public function getId(){ return $this->id; }
-public function setId($id){
-    if (strlen($id) > 0 )
-    $this->id = $id;
-
-}
 
 public function getLado(){ return $this->lado; }
 public function setLado($lado){
     if ($lado > 0)
     $this->lado = $lado;
-}
-
-public function getCor(){ return $this->cor; }
-public function setCor($cor){
-    if (strlen($cor) > 0 )
-    $this->cor = $cor;
-}
-
-public function getTabuleiro(){ return $this->idTabuleiro; }
-public function setTabuleiro($idTabuleiro){
-    return $this->idTabuleiro = $idTabuleiro;
 }
 
 public function area(){
@@ -71,27 +53,18 @@ public function __toString(){
             ."<br> Área:" .$this->area()
             ."<br> Perímetro:" .$this->perimetro()
             ."<br> Diagonal:" .$this->diagonal() 
-            ."<br> Quadrado: <br><br>" .$this->desenha();
-
+            ."<br> Contador:" .self::$contador 
+            ."<hr><br> Quadrado: <br>" .$this->desenha();
 }
 
 public function inserir(){
 
-    $conexao = Conexao::getInstance(); // conexão com o banco de dados 
     $query = 'INSERT INTO quadrado (lado, cor, idTabuleiro) VALUES(:lado,:cor, :idTabuleiro)'; // : = padrão de nomenclatura do PDO
 
-    $stmt = $conexao->prepare($query);
-    $stmt->bindValue(':lado', $this->getLado(), PDO::PARAM_INT);
-    $stmt->bindValue(':cor', $this->getCor(), PDO::PARAM_STR);
-    $stmt->bindValue(':idTabuleiro', $this->getTabuleiro(), PDO::PARAM_INT);
-
-
-    if ($stmt->execute())
-        return $conexao->lastInsertId();
-        else{
-            return 0;
-            $stmt->debugDumpParams();
-    }
+    $parametros = array(":lado"=>$this->getLado(),
+                        ":cor"=>$this->getCor(),
+                        ":idTabuleiro"=>$this->getTabuleiro());
+    return parent::executaComando($query,$parametros); ;
 
 }
 
@@ -113,7 +86,7 @@ public function inserir(){
     }
 
     public function listar($tipo = 0, $info = ""){ //listar todos os registros do banco no index
-
+        // static = não precisa de um objeto pra usar ela
         $conexao = Conexao::getInstance();
         //montar sql comando para inserir os dados
         $sql = 'SELECT * FROM quadrado ';
@@ -141,19 +114,6 @@ public function inserir(){
             
     }
 
-    public function buscar($id){ //listar todas as informações de um quadrado específico
-        $conexao = Conexao::getInstance();
-        
-        $sql = 'SELECT * FROM quadrado
-        WHERE id = :id';
-         $resultado = $conexao->prepare($sql);
-         //vincular os parâmetros
-         $resultado->bindValue(':id', $id, PDO::PARAM_STR);
-         //executa a consulta no banco de dados ( query = consulta )
-         $resultado->execute();
-         return $resultado->fetchAll();
-    }
-
     public function desenha(){
 
         $quad = "<style> .container{
@@ -165,6 +125,10 @@ public function inserir(){
         return $quad;
         //string com getNome
 
+    }
+
+    public function calculaArea(){
+        
     }
 }
 

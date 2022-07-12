@@ -46,8 +46,8 @@
 // joaquim = quadrado -> tarefa :D
 // joaquina chama o joaquim pra fazer a tarefa dele, no caso chamar a __toString
 $joaquim = new Quadrado($id, $lado, $cor, $idTabuleiro);
-$joaquina = $joaquim->__toString();
-echo $joaquina;
+
+echo $joaquim;
 
 // ai o joaquim fez a tarefa dele
 

@@ -29,39 +29,16 @@ background-size:50px 50px;
 
 require("classe/quadrado.class.php");
 
-$info = isset($_POST['info']) ? $_POST['info'] : "";
+$consulta = isset($_POST['consulta']) ? $_POST['consulta'] : "";
 $tipo = isset($_POST['tipo']) ? $_POST['tipo'] : 0; //padrão de pesquisa é o lado
 $id = isset($_GET['id']) ? $_GET['id'] : 0;
-$lado = isset($_GET['lado']) ? $_GET['lado'] : 0;
-$cor = isset($_GET['cor']) ? $_GET['cor'] : 0;
-$idTabuleiro = isset($_GET['idTabuleiro']) ? $_GET['idTabuleiro'] : "";
+
 $acao = isset($_GET['acao']) ? $_GET['acao'] : "";
-
-//verificação
-
-
-// para criar um objeto
-// adicionar arquivo da classe
-    //require_once("classe/quadrado.class.php")
-//criar o objeto
-    //$quad = new Nome($argumentos ou $parametros);
-    //quad->insere();
-    //$lista = $quad->listar();
-    //foreach($lista as $linha){
-    //    echo $linha['cor'];
-    //}
- function lista_quad($id){
-    $Quadrado = new Quadrado("", "", "", "");
-    $lista = $Quadrado->buscar($id);
-
-    foreach($lista as $dados){ // return nos dados do quadrado ( $dados )
-        return $dados;
-    }
- }
-        if ($id > 0){ //chamar a função que vai listar o quadrado
-            $dados = lista_quad($id);
-                }
-
+$Quadrado;
+if ($acao == 'editar'){
+    $lista = Quadrado::listar(1, $id);
+    $Quadrado = new Quadrado($id, $lista[0]['lado'], $lista[0]['cor'], $lista[0]['idTabuleiro']);
+}
 ?>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -86,34 +63,46 @@ $acao = isset($_GET['acao']) ? $_GET['acao'] : "";
 <form action="processa.php" method="GET">
 
 <br><label for="id">ID</label>
-<input type="text" readonly name="id" value="<?php if($acao == "editar") echo $dados[0]; ?>">
+<input type="text" readonly name="id" value="<?php if($acao == "editar") echo $Quadrado->getId();?>">
 <!-- readonly para não ser possível editar -->
 
 <br>
 
 <label for="lado"> Lado </label>
-<input type="text" name="lado" value="<?php if($acao == "editar") echo $dados[1];?>">
+<input type="text" name="lado" value="<?php if($acao == "editar") echo $Quadrado->getLado();?>">
 
 <br>
 
 <label for="cor"> Cor </label>
-
-<label for="cor"></label>
-<input type="color" class="form-control form-control-color" id="cor" value="<?php if($acao == "editar") echo $dados[2]; ?>">
+<input type="color" name="cor" class="form-control form-control-color" id="cor" value="<?php if($acao == "editar") echo $Quadrado->getCor();?>">
 <br><br>
 <select name="idTabuleiro"><br>
+    <?php
+        require_once ("classe/tabuleiro.class.php");
+        $lista = Tabuleiro::listar();
+        $check = "";
+        foreach($lista as $linha){
+            if(isset($Quadrado))
+                if ($Quadrado->getTabuleiro() == $linha['idTabuleiro'])
+                $check = "selected";
+    ?>
+        <option <?=$check?> value="<?=$linha['idTabuleiro']?>"
+        ><?php echo "Tab: ".$linha['idTabuleiro']." - Lado: ".$linha['lado']
+        ?></option>
 
-                    <?php
-                        require_once "utils.php";
-                            echo listarTabuleiro();
-                    ?>
+        <?php
+            $check = "";
+    }
 
+        ?>
+
+</select>
 <input name="acao" value="salvar" id="acao" type="submit">
 </form>
 <br><br><br>
 <form method="POST">
 <label for="id">pesquisa: </label> 
-<input type="text" id="consulta" name="consulta" value="<?php echo $info; ?>">
+<input type="text" id="consulta" name="consulta" value="<?php echo $consulta; ?>">
 <br><br><legend>Método de pesquisa: </legend>
         <input type="radio" name="tipo" value="1" <?php if ($tipo == 1){echo 'checked';}?>> 
         <label for="id">ID</label>
@@ -121,6 +110,8 @@ $acao = isset($_GET['acao']) ? $_GET['acao'] : "";
         <label for="lado">Lado</label>
         <input type="radio" name="tipo" value="3" <?php if ($tipo == 3){echo 'checked';} ?>>
         <label for="cor">Cor</label>
+        <input type="radio" name="tipo" value="4" <?php if($tipo == 4){echo 'checked';}?>>
+        <label for="idTabuleiro">ID Tabuleiro</label>
         <input type="submit">
         </form>
 <br>
@@ -132,13 +123,14 @@ $acao = isset($_GET['acao']) ? $_GET['acao'] : "";
        <tr><th>ID</th>
         <th>Lado</th> 
         <th>Cor</th> 
+        <th>ID Tabuleiro</th>
         <th>Editar</th>
         <th>Excluir</th>
     </tr>
 
     <?php
         $quadrado = new Quadrado("","","","");
-        $lista = $quadrado->listar($tipo,$info);
+        $lista = $quadrado->listar($tipo,$consulta);
         foreach ($lista as $linha) {
             $cor = str_replace('#','%23', $linha['cor']);
 
@@ -150,7 +142,8 @@ $acao = isset($_GET['acao']) ? $_GET['acao'] : "";
 <td><a href="show.php?id=<?php echo $linha['id'];?>&lado=<?php echo $linha['lado']?>&cor=<?php echo $cor; ?>"><?php echo $linha['id'];?></a></td>
 <td><?php echo $linha["lado"] ?></td>
 <td><?php echo $linha["cor"] ?></td>
-<td><a href="index.php?acao=editar&id=<?php echo $linha['id'];?>'"><img class="icon" src="img/edit.png" alt=""></a></td>
+<td><?php echo $linha["idTabuleiro"]?></td>
+<td><a href="index.php?acao=editar&id=<?php echo $linha['id'];?>"><img class="icon" src="img/edit.png" alt=""></a></td>
 <td><a href="javascript:excluirRegistro('processa.php?acao=excluir&id=<?php echo $linha['id'];?>')"><img class="icon" src="img/delete.png" alt=""></a></td>
         
 </tr>

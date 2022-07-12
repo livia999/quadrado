@@ -48,7 +48,7 @@
             return $figura;
         }
 
-        public function listar($tipo = 0, $info = "" ){
+        public static function listar($tipo = 0, $info = "" ){
             $pdo = Conexao::getInstance();
 
             $sql = 'SELECT * FROM tabuleiro';
